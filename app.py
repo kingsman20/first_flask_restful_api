@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restful import Api
+from flask_restful import Api, Resource
 from flask_jwt import JWT
 
 from security import authenticate, identity
@@ -14,14 +14,13 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 app.secret_key = 'jose'
 api = Api(app)
 
-
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
+class WelcomePage(Resource):
+    def get(self):
+        return {'welcome': 'Welcome to the Flask RESTful API homepage'}
 
 jwt = JWT(app, authenticate, identity)  # /auth
 
+api.add_resource(WelcomePage, '/')
 api.add_resource(Store, '/store/<string:name>')
 api.add_resource(StoreList, '/stores')
 api.add_resource(Item, '/item/<string:name>')
